@@ -1,0 +1,40 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.practice-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.practice-item:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.success-criteria {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.summary-card {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: scale(1.02);
+}
+
+#rewardContainer {
+    margin-top: 20px;
+}
+
+.reward-image {
+    max-width: 200px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
