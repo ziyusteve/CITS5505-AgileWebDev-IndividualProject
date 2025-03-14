@@ -18,24 +18,37 @@ const bestPractices = [
 ];
 
 // Initialize practices
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const practicesList = document.getElementById('practicesList');
     const summaryText = document.getElementById('summaryText');
     const rewardContainer = document.getElementById('rewardContainer');
-    
+
     // Load user selections from localStorage
     const userSelections = JSON.parse(localStorage.getItem('userSelections')) || new Array(bestPractices.length).fill(false);
-    
+
     // Load practices
     loadPractices();
-    
+
     // Update summary
     function updateSummary() {
         const count = userSelections.filter(selection => selection).length;
-        summaryText.textContent = `You've implemented ${count} out of ${bestPractices.length} best practices`;
-        
-        // Success criteria check
-        if (count >= bestPractices.length * 0.8) { // Adjust threshold as needed
+
+        // Clear previous classes
+        summaryText.className = '';
+
+        let summaryMessage = `You've implemented ${count} out of ${bestPractices.length} best practices. Reach 12 to success!`;
+
+        if (count > 12) {
+            summaryText.className = 'success-message text-success';
+            summaryMessage += ' 🎉';
+        } else if (count === 12) {
+            summaryText.className = 'success-message text-success';
+            summaryMessage += ' ✓';
+        } else {
+            summaryText.className = '';
+        }
+        summaryText.textContent = summaryMessage;
+        if (count >= bestPractices.length * 0.8) {
             if (!rewardContainer.querySelector('img')) {
                 fetchRandomAnimalImage().then(url => {
                     const img = document.createElement('img');
@@ -46,7 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
+
     // Load practices into DOM
     function loadPractices() {
         bestPractices.forEach((practice, index) => {
@@ -61,30 +75,54 @@ document.addEventListener('DOMContentLoaded', function() {
                     </label>
                 </div>
             `;
-            
+
             practicesList.appendChild(practiceElement);
-            
+
             // Add event listener for checkbox changes
             const checkbox = practiceElement.querySelector('.form-check-input');
-            checkbox.addEventListener('change', function() {
+            checkbox.addEventListener('change', function () {
                 userSelections[index] = this.checked;
                 localStorage.setItem('userSelections', JSON.stringify(userSelections));
                 updateSummary();
             });
         });
-        
+
         updateSummary();
     }
-    
-    // Fetch random animal image
+
+    // Fetch random animal image (only pictures, no MP4 videos)
     async function fetchRandomAnimalImage() {
         try {
-            const response = await fetch('https://random.dog/woof.json');
-            const data = await response.json();
-            return data.url;
+            let retries = 0;
+            const maxRetries = 5; // Maximum number of retry attempts
+
+            while (retries <= maxRetries) {
+                const response = await fetch('https://random.dog/woof.json?width=400&height=300');
+                const data = await response.json();
+
+                // Check if the URL is an image (not MP4 video)
+                if (isImageUrl(data.url)) {
+                    return data.url;
+                }
+
+                // If it's a video, try again
+                retries++;
+                if (retries > maxRetries) {
+                    throw new Error('Max retries exceeded - could not find an image URL');
+                }
+            }
         } catch (error) {
             console.error('Error fetching animal image:', error);
             return '';
         }
     }
+
+    // Helper function to check if the URL is an image
+    function isImageUrl(url) {
+        // Check if the URL ends with an image file extension
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+        const lowerUrl = url.toLowerCase();
+        return imageExtensions.some(ext => lowerUrl.endsWith(ext));
+    }
+
 });
