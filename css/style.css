@@ -21,8 +21,16 @@ body {
 }
 
 .summary-card {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100; /* Make sure it's on top of everything */
+    padding: 15px;
+    background-color: #e8e8e8;
+    border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
+    margin: 10px;
 }
 
 .summary-card:hover {
