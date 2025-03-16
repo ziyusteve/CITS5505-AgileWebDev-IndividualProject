@@ -26,33 +26,62 @@ document.addEventListener('DOMContentLoaded', function () {
     const practicesList = document.getElementById('practicesList');
     const summaryText = document.getElementById('summaryText');
     const rewardContainer = document.getElementById('rewardContainer');
-
     // Load user selections from localStorage
     const userSelections = JSON.parse(localStorage.getItem('userSelections')) || new Array(bestPractices.length).fill(false);
-
+    // Initialize progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = '0%';
+        progressBar.setAttribute('aria-valuenow', '0');
+    }
     // Load practices
     loadPractices();
 
-    // Update summary
+
     function updateSummary() {
         const count = userSelections.filter(selection => selection).length;
-
-        // Clear previous classes
+        const totalPractices = bestPractices.length;
+        const progressPercentage = Math.round((count / totalPractices) * 100);
+    
+        // Update progress bar
+        const progressBar = document.querySelector('.progress-bar');
+        const progressBarContainer = document.querySelector('.progress');
+    
+        if (!progressBar) {
+            // Create progress bar if it doesn't exist
+            const progressBarHtml = `
+                <div class="progress" style="height: 20px; border-radius: 10px;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%" 
+                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            `;
+            const summaryCard = document.querySelector('.summary-card');
+            summaryCard.innerHTML = summaryCard.innerHTML + progressBarHtml;
+            progressBarContainer.innerHTML = progressBarHtml;
+        }
+    
+        // Update progress bar width
+        progressBar.style.width = `${progressPercentage}%`;
+        progressBar.setAttribute('aria-valuenow', progressPercentage);
+    
+        // Update summary message
         summaryText.className = '';
-
-        let summaryMessage = `You've implemented ${count} out of ${bestPractices.length} best practices. Reach 12 to success!`;
-
-        if (count > 12) {
+        let summaryMessage = `You've implemented ${count} out of ${totalPractices} best practices (${progressPercentage}%), reach 12 to get a reward!`;
+    
+        if (progressPercentage >= 80) {
             summaryText.className = 'success-message text-success';
             summaryMessage += ' 🎉';
-        } else if (count === 12) {
+        } else if (progressPercentage === 80) {
             summaryText.className = 'success-message text-success';
             summaryMessage += ' ✓';
         } else {
             summaryText.className = '';
         }
+    
         summaryText.textContent = summaryMessage;
-        if (count >= bestPractices.length * 0.8) {
+    
+        if (progressPercentage >= 80) {
             if (!rewardContainer.querySelector('img')) {
                 fetchRandomAnimalImage().then(url => {
                     const img = document.createElement('img');
@@ -63,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
+    
 
     function loadPractices() {
         const htmlContainer = document.getElementById('htmlPractices');

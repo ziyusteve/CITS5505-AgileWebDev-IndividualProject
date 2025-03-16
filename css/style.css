@@ -46,3 +46,23 @@ body {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
+.progress {
+    height: 20px;
+    border-radius: 10px;
+    margin: 5px 0;
+}
+
+.progress .progress-bar {
+    background-color: #17a2b8; /* Info color */
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+.success .progress .progress-bar {
+    background-color: #28a745; /* Success color */
+}
+
+.warning .progress .progress-bar {
+    background-color: #ffc107; /* Warning color */
+}
