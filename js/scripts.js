@@ -17,6 +17,10 @@ const bestPractices = [
     { id: 15, title: "Minimize Global Variables", explanation: "Keep variables scoped to functions or modules to reduce conflicts and improve security" }
 ];
 
+const htmlPractices = bestPractices.slice(0, 5);
+const cssPractices = bestPractices.slice(5, 10);
+const jsPractices = bestPractices.slice(10, 15);
+
 // Initialize practices
 document.addEventListener('DOMContentLoaded', function () {
     const practicesList = document.getElementById('practicesList');
@@ -61,34 +65,46 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // Load practices into DOM
     function loadPractices() {
-        bestPractices.forEach((practice, index) => {
-            const practiceElement = document.createElement('div');
-            practiceElement.className = 'practice-item';
-            practiceElement.innerHTML = `
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="practice-${index}" ${userSelections[index] ? 'checked' : ''}>
-                    <label class="form-check-label" for="practice-${index}">
-                        <h4>${practice.title}</h4>
-                        <p>${practice.explanation}</p>
-                    </label>
-                </div>
-            `;
+        const htmlContainer = document.getElementById('htmlPractices');
+        const cssContainer = document.getElementById('cssPractices');
+        const jsContainer = document.getElementById('jsPractices');
 
-            practicesList.appendChild(practiceElement);
+        function loadPracticesIntoContainer(practices, container, startIndex) {
+            practices.forEach((practice, index) => {
+                const practiceElement = document.createElement('div');
+                practiceElement.className = 'practice-item';
+                const originalIndex = startIndex + index;
+                practiceElement.innerHTML = `
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="practice-${originalIndex}" ${userSelections[originalIndex] ? 'checked' : ''}>
+                        <label class="form-check-label" for="practice-${originalIndex}">
+                            <h4>${practice.title}</h4>
+                            <p>${practice.explanation}</p>
+                        </label>
+                    </div>
+                `;
 
-            // Add event listener for checkbox changes
-            const checkbox = practiceElement.querySelector('.form-check-input');
-            checkbox.addEventListener('change', function () {
-                userSelections[index] = this.checked;
-                localStorage.setItem('userSelections', JSON.stringify(userSelections));
-                updateSummary();
+                container.appendChild(practiceElement);
+
+                const checkbox = practiceElement.querySelector('.form-check-input');
+                checkbox.addEventListener('change', function () {
+                    userSelections[originalIndex] = this.checked;
+                    localStorage.setItem('userSelections', JSON.stringify(userSelections));
+                    updateSummary();
+                });
             });
-        });
+        }
+
+        loadPracticesIntoContainer(htmlPractices, htmlContainer, 0);
+        loadPracticesIntoContainer(cssPractices, cssContainer, 5);
+        loadPracticesIntoContainer(jsPractices, jsContainer, 10);
 
         updateSummary();
     }
+
+
+
 
     // Fetch random animal image (only pictures, no MP4 videos)
     async function fetchRandomAnimalImage() {
